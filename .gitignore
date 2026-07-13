@@ -1,0 +1,14 @@
+# Build artifacts
+weclaw-desktop-v2.iso
+weclaw-desktop-v2.img
+build2/
+apk
+*.img
+*.iso
+*.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
