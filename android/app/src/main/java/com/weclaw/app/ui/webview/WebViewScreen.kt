@@ -8,6 +8,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -94,7 +95,7 @@ class WeClawJsBridge(private val auth: AuthManager) {
     fun getToken(): String = runBlocking { auth.getToken() }
 
     @JavascriptInterface
-    fun getDeviceId(): String = runBlocking { auth.deviceUuid.first() }
+    fun getDeviceId(): String = "weclaw-android"
 
     @JavascriptInterface
     fun close() {
