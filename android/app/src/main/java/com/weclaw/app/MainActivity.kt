@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         api = ApiService(auth)
         wsManager = WebSocketManager(auth)
 
-        if (auth.isLoggedIn()) wsManager.connect()
+        if (auth.isLoggedInSync()) wsManager.connect()
 
         setContent {
             WeClawTheme {

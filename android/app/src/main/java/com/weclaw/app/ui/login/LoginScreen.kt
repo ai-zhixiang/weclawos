@@ -1,5 +1,6 @@
 package com.weclaw.app.ui.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -11,6 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.weclaw.app.ui.theme.WeClawColors
 
 @Composable
 fun LoginScreen(
@@ -24,7 +26,9 @@ fun LoginScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WeClawColors.background),
         contentAlignment = Alignment.Center,
     ) {
         Card(
@@ -34,10 +38,6 @@ fun LoginScreen(
             colors = CardDefaults.cardColors(
                 containerColor = WeClawColors.surface
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp)
-                .background(WeClawColors.background),
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -45,16 +45,16 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
-                    text = "WeClaw",
+                    "WeClaw",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = WeClawColors.primary,
                 )
 
                 Text(
-                    text = "手机上的 Hermes",
+                    "语音 AI 助手",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = WeClawColors.textSecondary,
                 )
 
                 OutlinedTextField(

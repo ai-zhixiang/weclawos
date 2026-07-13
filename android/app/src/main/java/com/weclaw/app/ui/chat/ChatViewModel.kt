@@ -86,9 +86,11 @@ class ChatViewModel(
         }
 
         // 自动启动语音监听
-        if (auth.isLoggedIn()) {
-            wsManager.connect()
-            startListening()
+        viewModelScope.launch {
+            if (auth.isLoggedIn()) {
+                wsManager.connect()
+                startListening()
+            }
         }
     }
 
@@ -153,17 +155,6 @@ class ChatViewModel(
         }
         wsManager.send("用户选择了文件: $uri 类型: $type，请处理")
     }
-
-    fun toggleAttachmentSheet() {
-        _state.update { it.copy(showAttachmentSheet = !it.showAttachmentSheet) }
-    }
-
-    fun dismissAttachmentSheet() {
-        _state.update { it.copy(showAttachmentSheet = false) }
-    }
-
-    /** 创建临时拍照 URI */
-    fun createTempImageUri(): Uri = Uri.parse("file:///tmp/weclaw_camera_${System.currentTimeMillis()}.jpg")
 
     override fun onCleared() {
         wsManager.disconnect()

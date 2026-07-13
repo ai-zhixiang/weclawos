@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 private val Context.dataStore by preferencesDataStore("weclaw_auth")
 
@@ -26,6 +27,8 @@ class AuthManager(private val context: Context) {
 
     suspend fun getToken(): String = token.first()
     suspend fun isLoggedIn(): Boolean = token.first().isNotBlank()
+
+    fun isLoggedInSync(): Boolean = runBlocking { isLoggedIn() }
 
     suspend fun saveAuth(resp: AuthResponse) {
         context.dataStore.edit {
