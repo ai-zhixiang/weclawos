@@ -334,6 +334,14 @@ private fun TextInputBar(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { onSend() },
                 )
+            } else {
+                Text(
+                    "⏺",
+                    color = WeClawColors.textSecondary,
+                    modifier = Modifier
+                        .clickable { onDismiss() } // placeholder - TODO: wire to recorder
+                        .padding(horizontal = 8.dp),
+                )
             }
             Text(
                 "取消",
