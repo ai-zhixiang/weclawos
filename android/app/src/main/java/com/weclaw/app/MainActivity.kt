@@ -14,6 +14,8 @@ import com.weclaw.app.data.AuthManager
 import com.weclaw.app.data.WebSocketManager
 import com.weclaw.app.ui.chat.ChatScreen
 import com.weclaw.app.ui.chat.ChatViewModel
+import com.weclaw.app.ui.login.LoginScreen
+import com.weclaw.app.ui.login.LoginViewModel
 import com.weclaw.app.ui.theme.WeClawTheme
 import java.io.File
 
@@ -35,25 +37,40 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WeClawTheme {
-                val vm: ChatViewModel = viewModel(
-                    factory = ChatViewModel.Factory(api, wsManager, auth, applicationContext)
-                )
+                var hasLoggedIn by remember { mutableStateOf(auth.isLoggedInSync()) }
 
-                ChatScreen(
-                    viewModel = vm,
-                    onCameraClick = {
-                        val file = File(cacheDir, "camera_${System.currentTimeMillis()}.jpg")
-                        tempCameraUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
-                        cameraLauncher.launch(tempCameraUri!!)
-                    },
-                    onPhotoPickerClick = {
-                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    },
-                    onFilePickerClick = {
-                        filePickerLauncher.launch(arrayOf("*/*"))
-                    },
-                    onWebViewOpen = { },
-                )
+                if (hasLoggedIn) {
+                    val vm: ChatViewModel = viewModel(
+                        factory = ChatViewModel.Factory(api, wsManager, auth, applicationContext)
+                    )
+
+                    ChatScreen(
+                        viewModel = vm,
+                        onCameraClick = {
+                            val file = File(cacheDir, "camera_${System.currentTimeMillis()}.jpg")
+                            tempCameraUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
+                            cameraLauncher.launch(tempCameraUri!!)
+                        },
+                        onPhotoPickerClick = {
+                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
+                        onFilePickerClick = {
+                            filePickerLauncher.launch(arrayOf("*/*"))
+                        },
+                        onWebViewOpen = { },
+                    )
+                } else {
+                    val loginVm: LoginViewModel = viewModel(
+                        factory = LoginViewModel.Factory(api, auth)
+                    )
+                    LoginScreen(
+                        viewModel = loginVm,
+                        onLoginSuccess = {
+                            wsManager.connect()
+                            hasLoggedIn = true
+                        },
+                    )
+                }
             }
         }
     }

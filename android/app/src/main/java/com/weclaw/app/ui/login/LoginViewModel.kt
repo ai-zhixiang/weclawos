@@ -1,6 +1,7 @@
 package com.weclaw.app.ui.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.weclaw.app.data.ApiService
 import com.weclaw.app.data.AuthManager
@@ -51,5 +52,14 @@ class LoginViewModel(
                 _state.update { it.copy(isLoading = false, error = e.message ?: "网络错误") }
             }
         }
+    }
+
+    class Factory(
+        private val api: ApiService,
+        private val auth: AuthManager,
+    ) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            LoginViewModel(api, auth) as T
     }
 }
