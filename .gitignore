@@ -6,6 +6,9 @@ apk
 *.img
 *.iso
 *.gz
+android/.gradle/
+android/app/build/
+android/local.properties
 
 # OS files
 .DS_Store
