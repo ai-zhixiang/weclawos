@@ -14,10 +14,12 @@ import com.weclaw.app.data.AuthManager
 import com.weclaw.app.data.WebSocketManager
 import com.weclaw.app.ui.chat.ChatScreen
 import com.weclaw.app.ui.chat.ChatViewModel
-import com.weclaw.app.ui.login.LoginScreen
-import com.weclaw.app.ui.login.LoginViewModel
 import com.weclaw.app.ui.theme.WeClawTheme
 import java.io.File
+import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -33,44 +35,40 @@ class MainActivity : ComponentActivity() {
         api = ApiService(auth)
         wsManager = WebSocketManager(auth)
 
-        if (auth.isLoggedInSync()) wsManager.connect()
+        // 自动登录：用设备 UUID 作为手机号
+        if (!auth.isLoggedInSync()) {
+            val deviceId = UUID.randomUUID().toString().take(11).replace("-", "9")
+            CoroutineScope(Dispatchers.IO).launch {
+                api.login(deviceId).onSuccess { resp ->
+                    auth.saveAuth(resp)
+                    wsManager.connect()
+                }
+            }
+        } else {
+            wsManager.connect()
+        }
 
         setContent {
             WeClawTheme {
-                var hasLoggedIn by remember { mutableStateOf(auth.isLoggedInSync()) }
+                val vm: ChatViewModel = viewModel(
+                    factory = ChatViewModel.Factory(api, wsManager, auth, applicationContext)
+                )
 
-                if (hasLoggedIn) {
-                    val vm: ChatViewModel = viewModel(
-                        factory = ChatViewModel.Factory(api, wsManager, auth, applicationContext)
-                    )
-
-                    ChatScreen(
-                        viewModel = vm,
-                        onCameraClick = {
-                            val file = File(cacheDir, "camera_${System.currentTimeMillis()}.jpg")
-                            tempCameraUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
-                            cameraLauncher.launch(tempCameraUri!!)
-                        },
-                        onPhotoPickerClick = {
-                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                        },
-                        onFilePickerClick = {
-                            filePickerLauncher.launch(arrayOf("*/*"))
-                        },
-                        onWebViewOpen = { },
-                    )
-                } else {
-                    val loginVm: LoginViewModel = viewModel(
-                        factory = LoginViewModel.Factory(api, auth)
-                    )
-                    LoginScreen(
-                        viewModel = loginVm,
-                        onLoginSuccess = {
-                            wsManager.connect()
-                            hasLoggedIn = true
-                        },
-                    )
-                }
+                ChatScreen(
+                    viewModel = vm,
+                    onCameraClick = {
+                        val file = File(cacheDir, "camera_${System.currentTimeMillis()}.jpg")
+                        tempCameraUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
+                        cameraLauncher.launch(tempCameraUri!!)
+                    },
+                    onPhotoPickerClick = {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
+                    onFilePickerClick = {
+                        filePickerLauncher.launch(arrayOf("*/*"))
+                    },
+                    onWebViewOpen = { },
+                )
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.weclaw.app.ui.chat
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +34,6 @@ fun ChatScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    var showInput by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) {
@@ -43,16 +41,11 @@ fun ChatScreen(
         }
     }
 
-    // 自动隐藏输入栏
-    if (showInput && state.isListening) {
-        showInput = false
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(WeClawColors.background)
-            .clickable { if (showInput) showInput = false }
+            .clickable { /* dismiss keyboard */ }
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -104,20 +97,13 @@ fun ChatScreen(
             }
         }
 
-        // ── 底部文字输入（点击麦克风旁区域展开） ──
-        AnimatedVisibility(
-            visible = showInput,
-            enter = slideInVertically { it },
-            exit = slideOutVertically { it },
-            modifier = Modifier.align(Alignment.BottomCenter),
-        ) {
-            TextInputBar(
-                inputText = state.inputText,
-                onInputChange = viewModel::onInputChange,
-                onSend = { viewModel.sendMessage(); showInput = false },
-                onDismiss = { showInput = false },
-            )
-        }
+        // ── 底部文字输入（始终可见） ──
+        TextInputBar(
+            inputText = state.inputText,
+            onInputChange = viewModel::onInputChange,
+            onSend = { viewModel.sendMessage() },
+            onDismiss = { },
+        )
     }
 }
 
