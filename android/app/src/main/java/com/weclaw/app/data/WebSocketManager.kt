@@ -26,7 +26,7 @@ class WebSocketManager(private val auth: AuthManager) {
             if (token.isBlank()) return@launch
 
             val request = Request.Builder()
-                .url("wss://hai.pangoozn.com/api/chat/ws?token=$token")
+                .url("wss://ai.pangoozn.com/api/chat/ws?token=$token")
                 .build()
 
             ws = client.newWebSocket(request, object : WebSocketListener() {

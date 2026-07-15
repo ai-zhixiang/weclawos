@@ -15,7 +15,7 @@ class ApiService(private val auth: AuthManager) {
         .build()
 
     private val JSON = "application/json; charset=utf-8".toMediaType()
-    private val baseUrl = "https://hai.pangoozn.com"
+    private val baseUrl = "https://ai.pangoozn.com"
 
     // ── Auth ──
 
